@@ -1,6 +1,10 @@
 import numpy as np
+import h5py
 
 class Layer():
+    def __init__(self): 
+        self.key = "layer" # for easier weight load
+
     def forward(self, x):
         raise NotImplementedError("Forward method not implemented")
     
