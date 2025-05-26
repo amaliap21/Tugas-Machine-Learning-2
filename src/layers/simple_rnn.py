@@ -1,5 +1,7 @@
-from .layer import Layer
+from .layer import RNN
 
-class SimpleRNN(Layer):
-    def __init__(self, units, activation="tanh"):
-        self.key = "layer"
+class SimpleRNN(RNN):
+    def __init__(self, units, activation="tanh", return_sequences=False, go_backwards=False):
+        super().__init__(return_sequences=False, go_backwards=False)
+
+        self.key = "simple_rnn"

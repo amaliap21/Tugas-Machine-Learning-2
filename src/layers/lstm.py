@@ -1,13 +1,14 @@
-from .layer import Layer
+from .layer import RNN
 import numpy as np
 
-class LSTM(Layer):
-    def __init__(self, units, activation="tanh", recurrent_activation="sigmoid", return_sequences=False):
+class LSTM(RNN):
+    def __init__(self, units, activation="tanh", recurrent_activation="sigmoid", return_sequences=False, go_backwards=False):
+        super().__init__(return_sequences=return_sequences, go_backwards=go_backwards)
+
         self.key = "lstm"
         self.units = units
         self.activation = self._get_activation(activation)
         self.recurrent_activation = self._get_activation(recurrent_activation)
-        self.return_sequences = return_sequences
 
         self.kernel = None
         self.recurrent_kernel = None
@@ -47,7 +48,9 @@ class LSTM(Layer):
         b_c = self.bias[self.units * 2:self.units * 3]
         b_o = self.bias[self.units * 3:]  
 
-        for t in range(timesteps):
+        time_range = reversed(range(timesteps)) if self.go_backwards else range(timesteps)
+
+        for t in range(time_range):
             x_t = x_batched[:, t, :]
 
             f_gate = self.recurrent_activation(np.dot(x_t, W_f) + np.dot(h_t, U_f) + b_f)
