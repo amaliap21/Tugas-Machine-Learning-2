@@ -15,6 +15,9 @@ class LSTM(RNN):
         self.bias = None
 
     def forward(self, x):
+        if self.kernel is None or self.recurrent_kernel is None or self.bias is None:
+            raise ValueError("Weights not initialized. Call load_keras_weights() first.")
+
         original_ndim = x.ndim
 
         if original_ndim == 2:

@@ -11,7 +11,7 @@ class Bidirectional(Layer):
         if merge_mode not in ["concat", "sum", "mul", "ave"]:
             raise ValueError(f"Invalid merge mode: {merge_mode}")
         
-        self.key = "layer"
+        self.key = "bidirectional"
         self.merge_mode = merge_mode
 
         self.forward_layer = layer
@@ -25,7 +25,6 @@ class Bidirectional(Layer):
         if self.forward_layer.return_sequences:
             y_backward = np.flip(y_backward, axis=1)
 
-        # Merge the outputs based on the specified mode
         if self.merge_mode == "concat":
             return np.concatenate([y_forward, y_backward], axis=-1)
         elif self.merge_mode == "sum":
