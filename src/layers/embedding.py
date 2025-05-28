@@ -1,22 +1,23 @@
 from .layer import Layer
-from tensorflow.keras.layers import Embedding
+import numpy as np
 
 class EmbeddingWrapper(Layer):
     def __init__(self, input_dim: int, output_dim: int):
-        self.embedding = Embedding(input_dim=input_dim, output_dim=output_dim)
         self.key = 'embedding'
-        self.built = False 
-
-    def build(self, input_shape):
-        self.embedding.build(input_shape)
-        self.built = True
+        self.weights = None
 
     def forward(self, x):
-        return self.embedding(x)
+        if self.weights is None:
+            raise ValueError("Weights not loaded. Call load_keras_weights() first.")
+        embedding_matrix = self.weights[0]
+        batch_size, sequence_length = x.shape
+        embedding_dim = embedding_matrix.shape[1]
+        output = np.zeros((batch_size, sequence_length, embedding_dim))
+        for i in range(batch_size):
+            for j in range(sequence_length):
+                token_id = x[i][j]
+                output[i][j] = embedding_matrix[token_id] # a word is converted to a single vector (row)
+        return output
     
     def load_keras_weights(self, weights):
-        if not self.built:
-            dummy_shape = (1, 1)
-            self.build(dummy_shape)
-        self.embedding.set_weights(weights)
-    
+        self.weights= weights

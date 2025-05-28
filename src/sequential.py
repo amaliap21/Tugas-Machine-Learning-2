@@ -5,9 +5,23 @@ import h5py
 class Sequential:
     def __init__(self, layers=None):
         self.layers: list[Layer] = []
+
         if layers:
+            key_count = {}
             for layer in layers:
-                self.add(layer)
+                key = getattr(layer, "key", None)
+                if key:
+                    key_count[key] = key_count.get(key, 0) + 1
+            duplicates_exist = any(count > 1 for count in key_count.values())
+            if duplicates_exist:
+                rename_counter = {}
+                for layer in layers:
+                    key = getattr(layer, "key", None)
+                    if key:
+                        rename_counter[key] = rename_counter.get(key, 0) + 1
+                        new_key = f"{key}_{rename_counter[key]}"
+                        layer.key = new_key
+            self.layers.extend(layers)
 
     def add(self, layer):
         if not isinstance(layer, Layer):
@@ -33,7 +47,8 @@ class Sequential:
                 if not hasattr(custom_layer, "key"):
                     print(f"Custom layer {i} (type: {type(custom_layer).__name__}) has no 'key' attribute, skipping.")
                     continue
-
+                
+                print(keras_layer_names_in_file)
                 if custom_layer.key in keras_layer_names_in_file:
                     try:
                         keras_layer_h5_group = keras_weights_group[custom_layer.key]
