@@ -1,10 +1,8 @@
 # Tugas-Machine-Learning-2
-<<<<<<< HEAD
 
 Tugas Besar II pada kuliah IF3270 Pembelajaran Mesin agar peserta kuliah mendapatkan wawasan tentang bagaimana cara mengimplementasikan Convolutional Neural Network (CNN) dan Recurrent Neural Network. Pada tugas ini, peserta kuliah akan ditugaskan untuk mengimplementasikan modul forward propagation CNN dan RNN from scratch.
-=======
+
 Pada folder src terdapat notebook - notebook yang isinya dikelompokkan berdasarkan model apa yang digunakan. Pada folder src juga terdapat folder layers yang isinya semua layer yang diimplementasikan. Folder bins digunakan untuk menyimpan model dan gambar grafik - grafik pengujian.
->>>>>>> bf4321580abe2b82568c6e5ec542602c59f40d26
 
 ## Setup
 
