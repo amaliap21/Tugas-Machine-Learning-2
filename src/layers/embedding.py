@@ -42,8 +42,3 @@ class Embedding(Layer):
    
     def load_keras_weights(self, weights):
         self.weights = weights
-        
-    def compute_mask(self, inputs):
-        if not self.mask_zero:
-            return None
-        return (inputs != 0).astype(np.float32)
