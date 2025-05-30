@@ -15,9 +15,24 @@ class Sequential:
         self.layers.append(layer)
 
     def predict(self, initial_x):
-        next_x = initial_x
-        for layer in self.layers:
-            next_x = layer.forward(next_x)
+        if hasattr(initial_x, 'numpy'):
+            next_x = initial_x.numpy()
+        else:
+            next_x = np.array(initial_x)
+        mask = None
+        
+        for i, layer in enumerate(self.layers):
+            if hasattr(layer, 'mask_zero') and layer.mask_zero:
+                result = layer.forward(next_x)
+                if isinstance(result, tuple):
+                    next_x, mask = result
+                else:
+                    next_x = result
+            elif hasattr(layer, 'forward') and 'mask' in layer.forward.__code__.co_varnames:
+                next_x = layer.forward(next_x, mask=mask)
+            else:
+                next_x = layer.forward(next_x)
+                
         return next_x
 
     def load_weights(self, path_to_h5_file: str):
