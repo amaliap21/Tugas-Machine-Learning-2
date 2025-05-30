@@ -10,33 +10,44 @@ class SimpleRNN(RNN):
         self.recurrent_kernel = None # W
         self.bias = None # b
         self.activation = self._get_activation(activation)
-
-    def forward(self, x):
-        """
-        note to self:
-        batch_size = ammount of sentences
-        time_steps = ammount of tokens to represent a sentence
-        input_dim = ammount of dimensions used to represent a token
-        """
+        
+    def forward(self, x, mask=None):
         batch_size, time_steps, input_dim = x.shape
-        units = self.kernel.shape[1] # ammount of neuron at end
+        units = self.kernel.shape[1]
         h_t = np.zeros((batch_size, units))
+
         if self.return_sequences:
             outputs = np.zeros((batch_size, time_steps, units))
-        time_indices = range(time_steps)
+
+        time_indices = list(range(time_steps))
         if self.go_backwards:
-            time_indices = reversed(time_indices)
-        for t in time_indices:
-            x_t = x[:, t, :] # one word of each timestep
-            h_t = self.activation(
-                np.dot(x_t, self.kernel) + 
-                np.dot(h_t, self.recurrent_kernel) + 
+            time_indices = list(reversed(time_indices))
+
+        for step_idx, t in enumerate(time_indices):
+            x_t = x[:, t, :]
+
+            h_t_new = self.activation(
+                np.dot(x_t, self.kernel) +
+                np.dot(h_t, self.recurrent_kernel) +
                 self.bias
             )
-            if self.return_sequences:
-                outputs[:, t, :] = h_t
 
-        return outputs if self.return_sequences else h_t
+            if mask is not None:
+                mask_t = mask[:, t]
+                mask_t = mask_t[:, np.newaxis] 
+                h_t = mask_t * h_t_new + (1 - mask_t) * h_t
+            else:
+                h_t = h_t_new
+
+            if self.return_sequences:
+                if self.go_backwards:
+                    outputs[:, time_steps - 1 - step_idx, :] = h_t
+                else:
+                    outputs[:, t, :] = h_t
+
+        if self.return_sequences:
+            return outputs
+        return h_t
 
     def load_keras_weights(self, weights):
         if len(weights) == 3:

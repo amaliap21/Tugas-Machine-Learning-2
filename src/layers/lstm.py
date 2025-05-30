@@ -1,4 +1,4 @@
-from .layer import RNN
+from .rnn import RNN
 import numpy as np
 
 class LSTM(RNN):
@@ -14,23 +14,24 @@ class LSTM(RNN):
         self.recurrent_kernel = None
         self.bias = None
 
-    def forward(self, x):
+    def forward(self, x, mask=None):
         if self.kernel is None or self.recurrent_kernel is None or self.bias is None:
             raise ValueError("Weights not initialized. Call load_keras_weights() first.")
 
         original_ndim = x.ndim
-
         if original_ndim == 2:
             timesteps, _ = x.shape
             batch_size = 1
             # Reshape x_sequence to (batch_size, timesteps, input_dim)
             x_batched = x[np.newaxis, :, :]
+            if mask is not None:
+                mask = mask[np.newaxis, :]
         elif original_ndim == 3:
             batch_size, timesteps, _ = x.shape
             x_batched = x
         else:
             raise ValueError("Input sequence must be 2D or 3D.")
-        
+
         h_t = np.zeros((batch_size, self.units))
         c_t = np.zeros((batch_size, self.units))
 
@@ -53,18 +54,42 @@ class LSTM(RNN):
 
         time_range = reversed(range(timesteps)) if self.go_backwards else range(timesteps)
 
-        for t in range(time_range):
+        for step_idx, t in enumerate(time_range):
             x_t = x_batched[:, t, :]
+            
+            if mask is not None:
+                mask_t = mask[:, t:t+1]
+                
+                if np.all(mask_t == 0):
+                    if self.return_sequences:
+                        if self.go_backwards:
+                            outputs[:, timesteps - 1 - step_idx, :] = h_t
+                        else:
+                            outputs[:, t, :] = h_t
+                    continue
 
             f_gate = self.recurrent_activation(np.dot(x_t, W_f) + np.dot(h_t, U_f) + b_f)
             i_gate = self.recurrent_activation(np.dot(x_t, W_i) + np.dot(h_t, U_i) + b_i)
             c_candidate = self.activation(np.dot(x_t, W_c) + np.dot(h_t, U_c) + b_c)
             o_gate = self.recurrent_activation(np.dot(x_t, W_o) + np.dot(h_t, U_o) + b_o)
 
-            c_t = f_gate * c_t + i_gate * c_candidate
-            h_t = o_gate * self.activation(c_t)
+            c_t_new = f_gate * c_t + i_gate * c_candidate
+            h_t_new = o_gate * self.activation(c_t_new)
 
-            outputs[:, t, :] = h_t
+            if mask is not None:
+                mask_expanded = np.broadcast_to(mask_t, h_t.shape)
+
+                h_t = mask_expanded * h_t_new + (1 - mask_expanded) * h_t
+                c_t = mask_expanded * c_t_new + (1 - mask_expanded) * c_t
+            else:
+                h_t = h_t_new
+                c_t = c_t_new
+
+            if self.return_sequences:
+                if self.go_backwards:
+                    outputs[:, timesteps - 1 - step_idx, :] = h_t
+                else:
+                    outputs[:, t, :] = h_t
 
         if self.return_sequences:
             if original_ndim == 2:
@@ -74,7 +99,7 @@ class LSTM(RNN):
             if original_ndim == 2:
                 return h_t[0]
             return h_t
-    
+
     def load_keras_weights(self, weights):
         self.kernel = weights[0]
         self.recurrent_kernel = weights[1]
