@@ -1,8 +1,9 @@
 import numpy as np
-from layer import Layer
+from .layer import Layer
 
 class Conv2D(Layer):
     def __init__(self, filters, kernel_size, strides=(1, 1), padding='valid', groups=1, activation=None):
+        self.key = 'conv2d'
         self.filters = filters
         self.kernel_size = kernel_size if isinstance(kernel_size, tuple) else (kernel_size, kernel_size)
         self.strides = strides

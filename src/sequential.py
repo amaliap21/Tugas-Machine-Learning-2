@@ -11,6 +11,7 @@ class Sequential:
 
     def add(self, layer):
         if not isinstance(layer, Layer):
+            print(f"Warning: Attempted to add a non-layer object of type {type(layer).__name__}.")
             raise ValueError("Layer must be an instance of Layer class.")
         self.layers.append(layer)
 
@@ -50,12 +51,15 @@ class Sequential:
 
             # Build a mapping from base_key → list of available indexed variants
             available_layers = defaultdict(list)
-            pattern = re.compile(r"^(.*?)(?:_(\d+))?$")
+            pattern = re.compile(r"^(.*?)(?:_(\d+)|_output)$")
             for name in keras_layer_names_in_file:
                 match = pattern.match(name)
                 if match:
                     base_key = match.group(1)
                     available_layers[base_key].append(name)
+                else:
+                    # Handle names without suffix (like 'flatten')
+                    available_layers[name].append(name)
 
             # Track which index to use for each base_key
             usage_counter = defaultdict(int)
@@ -73,6 +77,8 @@ class Sequential:
 
                 # Get the correct key variant to match
                 candidate_names = sorted(available_layers.get(base_key, []))
+                keras_key = None
+
                 if not candidate_names:
                     print(f"No matching group in file for layer key base '{base_key}'")
                     continue
