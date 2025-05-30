@@ -1,8 +1,8 @@
 # Tugas-Machine-Learning-2
 
-Tugas Besar II pada kuliah IF3270 Pembelajaran Mesin agar peserta kuliah mendapatkan wawasan tentang bagaimana cara mengimplementasikan Convolutional Neural Network (CNN) dan Recurrent Neural Network. Pada tugas ini, peserta kuliah akan ditugaskan untuk mengimplementasikan modul forward propagation CNN dan RNN from scratch.
+Machine Learning Major Assignment II for the course IF3270 Machine Learning aims to provide students with insights into how to implement Convolutional Neural Networks (CNN) and Recurrent Neural Networks (RNN) from scratch.
 
-Pada folder src terdapat notebook - notebook yang isinya dikelompokkan berdasarkan model apa yang digunakan. Pada folder src juga terdapat folder layers yang isinya semua layer yang diimplementasikan. Folder bins digunakan untuk menyimpan model dan gambar grafik - grafik pengujian.
+In the src folder, you’ll find Jupyter notebooks grouped by the model being used. The src/layers folder contains all the implemented layers. The bins folder is used to store models and evaluation graphs/images.
 
 ## Setup
 
@@ -37,13 +37,16 @@ pip install -r requirements.txt
 ```
 pip freeze > requirements.txt
 ```
-## Cara run
-Untuk melihat hasil pengujian, sangat disarankan untuk run tiap notebook yang relevan yaitu : lstm.ipynb . tubes2-rnn.ipynb, serta cnn.ipynb
+## How to Run
+To view the evaluation results, it is highly recommended to run the relevant notebooks:
+- cnn.ipynb
+- rnn.ipynb
+- lstm.ipynb
 
-## Pembagian Tugas
+## Task Distribution
 
-| Nama                                   | Tugas                                                                                                |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Amalia Putri (13522042)                | FFNN class, forward & back propagation, training, testing, autodiff                                  |
-| Venantius Sean Ardi Nugroho (13522078) | Text Vectorization Layer, Embedding, Simple RNN, dan dokumen                                         |
-| Julian Chandra Sutadi (13522080)       | Visualisasi Weight Distribution, Visualisasi Weight Gradient Distribution, Laporan, Debug dan Fixing |
+| Nama                                   | Tugas                                                            |
+| -------------------------------------- | ---------------------------------------------------------------- |
+| Amalia Putri (13522042)                | CNN (Conv2D), Pooling, Flatten, Dropout                          |
+| Venantius Sean Ardi Nugroho (13522078) | Text Vectorization Layer, Embedding, SimpleRNN, and tech report |
+| Julian Chandra Sutadi (13522080)       | LSTM, Bidirectional, Dense, notebook template                    |
