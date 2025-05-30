@@ -4,7 +4,7 @@ Convolutional Neural Network dan Recurrent Neural Network
 ## Setup
 ### Create the virtual environment
 ```
-python - m venv .venv
+python -m venv .venv
 ```
 
 ### Enter the virtual environment
