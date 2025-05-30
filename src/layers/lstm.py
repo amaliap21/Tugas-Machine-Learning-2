@@ -1,4 +1,4 @@
-from .layer import RNN
+from .rnn import RNN
 import numpy as np
 
 class LSTM(RNN):
@@ -53,7 +53,7 @@ class LSTM(RNN):
 
         time_range = reversed(range(timesteps)) if self.go_backwards else range(timesteps)
 
-        for t in range(time_range):
+        for t in time_range:
             x_t = x_batched[:, t, :]
 
             f_gate = self.recurrent_activation(np.dot(x_t, W_f) + np.dot(h_t, U_f) + b_f)

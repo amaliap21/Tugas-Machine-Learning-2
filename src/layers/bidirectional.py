@@ -1,5 +1,5 @@
 from .layer import Layer
-from .layer import RNN
+from .rnn import RNN
 from copy import deepcopy
 import numpy as np
 

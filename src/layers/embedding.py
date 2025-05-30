@@ -1,7 +1,7 @@
 from .layer import Layer
 import numpy as np
 
-class EmbeddingWrapper(Layer):
+class Embedding(Layer):
     def __init__(self, input_dim: int, output_dim: int):
         self.key = 'embedding'
         self.weights = None
